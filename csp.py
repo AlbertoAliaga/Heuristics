@@ -42,19 +42,16 @@ print()'''
 
 problem = Problem()
 
-# Dominio 0 = N     Dominio 1 = E       Destino X = X
-
-# Lista que contiene los elementos separados de container
-unit_container = container.split()
+# Dominio 0 = N     Dominio 1 = E       Destino X = X    
 
 # En este bucle se sacan las variables de contenedores y se asignan los dominios
-for i in container:
-    #unit_container = i.split()
-    id = unit_container[i][0]
-    type = unit_container[i][1]
-    destination = unit_container[i][2]
+for elem in container:
+    index = container.index(elem)
+    container[index] = elem.split()      # Lista que contiene los elementos separados de container
+    id = container[index][0]
+    type = container[index][1]
+    destination = container[index][2]
     print("id = ", id, "\ttype = ", type, "\tdest = ", destination)
-
 
     if(type == "S"):
         print("Container w/ S's id = ", id)
