@@ -4,6 +4,7 @@
 import sys
 import os
 from constraint import *
+import itertools
 
 
 ######################## Input reading ##################################
@@ -54,34 +55,45 @@ for elem in container:
 
     id = id_list[index]     #Aux var to avoid memory accesses
 
+# List with the cartesian product of all possible types of cells and destination ports
+domain = []
+for i in itertools.product(['N','E'], list(range(1, max(destination_list)+1))):
+    domain.append(i)
+print("Domain: ")
+print(domain)
+
+#
+for elem in container:
     if(type_list[index] == "S"):
-        print("Container w/ S's id = ", id)
-        problem.addVariable(id, ['N', destination_list[index]])
+        for i in domain:
+            print("Container w/ S's id = ", id)
+            problem.addVariable(id, ['N'])
+            problem.addVariable(id, [destination_list[index]])
     elif(type_list[index] == "R"):
-        print("Container w/ R's id = ", id)
-        problem.addVariable(id, ['N','E', destination_list[index]])
+        for
+            print("Container w/ R's id = ", id)
+            problem.addVariable(id, domain)
     else:
         print("Input error. ", sys.argv[3], " contains wrong data.")
 
-print(id_list)
-print(type_list)
-print(destination_list, "\n")
+print("\nID list: ", id_list)
+print("Type list: ", type_list)
+print("Destination list: ", destination_list, "\n")
 
 def compareDestination(a, b):
+    print("a: ", a, ", b: ", b)
     if a < b:
-	    return True
+        return True
 
 # This loop iterates over each container and compares its destination to all others
 for id in range(0, len(id_list)):
     a = destination_list[id]
-    for id_iter in range(0, len(id_list)):
-        print(type_list[id_iter])
-        for dest in range(1, max(destination_list)):
-            if id != id_iter and a != dest:
-                b = destination_list[id_iter]
-                problem.addConstraint(compareDestination, (a, b))
+    for id_iter in range(id+1, len(id_list)):
+        #print(type_list[id_iter])
+        b = destination_list[id_iter]
+        #problem.addConstraint(compareDestination, (a, b))
 
-#print(problem.getSolution())
+solutions = problem.getSolutions()
 
 
 
