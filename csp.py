@@ -44,23 +44,32 @@ problem = Problem()
 
 # Dominio 0 = N     Dominio 1 = E       Destino X = X
 
+# Lista que contiene los elementos separados de container
+unit_container = container.split()
+
 # En este bucle se sacan las variables de contenedores y se asignan los dominios
 for i in container:
-    unit_container = i.split()
-    id = unit_container[0]
-    type = unit_container[1]
-    destination = unit_container[2]
-    #print("id = ", id, "\ttype = ", type, "\tdest = ", destination)
+    #unit_container = i.split()
+    id = unit_container[i][0]
+    type = unit_container[i][1]
+    destination = unit_container[i][2]
+    print("id = ", id, "\ttype = ", type, "\tdest = ", destination)
 
 
-    if(type == "R"):
-        print("Container w/ R's id = ", id)
-        problem.addVariable(id, ['N', destination])
-    elif (type == "S"):
+    if(type == "S"):
         print("Container w/ S's id = ", id)
+        problem.addVariable(id, ['N', destination])
+    elif (type == "R"):
+        print("Container w/ R's id = ", id)
         problem.addVariable(id, ['N','E', destination])
     else:
         print("Input error. ", sys.argv[3], " contains wrong data.")
+
+def compareDestination(a, b):
+    if a < b:
+	    return True
+
+#problem.addConstraint(compareDestination, )
 
 
 
