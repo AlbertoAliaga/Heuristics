@@ -7,7 +7,7 @@ from constraint import *
 
 
 ######################## Input reading ##################################
-# para correr el programa en el PC de RBN: python3 csp.py /home/rbn/pyCharmProjects/Heuristica/lab-2/Heuristics/P2 Input-cells.txt Input-cont.txt
+# In order to run this code on Linux: python3 csp.py /home/rbn/pyCharmProjects/Heuristica/lab-2/Heuristics/P2 Input-cells.txt Input-cont.txt
 
 path = sys.argv[1]
 map = sys.argv[2]
@@ -27,46 +27,58 @@ container = container.read(container_file_size)
 map = map.split("\n")
 container = container.split("\n")
 
-'''
-print(map)
-print()
-print(container)
-print()'''
-
 #########################  ##################################
 
 '''
-    Cada input de Input-cont.txt es una variable. Los dominios son si necesita una posición con
-    energía o no (si es R la necesita, si es S no tiene por qué) y a qué puerto van
+    Each input on Input-cont.txt is a variable. The domains indicate whether it needs a power
+    supplied cell or not (if it is an R type container it is needed) and their port destination.
 '''
 
 problem = Problem()
 
-# Dominio 0 = N     Dominio 1 = E       Destino X = X    
+# Domain 0 = N     Domain 1 = E       Destination X = X    
 
-# En este bucle se sacan las variables de contenedores y se asignan los dominios
+def compareDestination(a, b):
+    if a == 'R' and b == 'S' and a < b:
+	    return True
+
+# One list per field on container
+id_list = []
+type_list = []
+destination_list = []
+
+# This loop takes variables from the containers and assigns domains 
 for elem in container:
     index = container.index(elem)
-    container[index] = elem.split()      # Lista que contiene los elementos separados de container
-    id = container[index][0]
-    type = container[index][1]
-    destination = container[index][2]
-    print("id = ", id, "\ttype = ", type, "\tdest = ", destination)
+    container[index] = elem.split()      # List with separated elements from container list
+    id_list.append(int(container[index][0]))
+    type_list.append(container[index][1])
+    destination_list.append(int(container[index][2]))
+    #print("id = ", id, "\ttype = ", type, "\tdest = ", destination)
 
-    if(type == "S"):
+    id = id_list[index]     #Aux var to avoid memory accesses
+
+    if(type_list[index] == "S"):
         print("Container w/ S's id = ", id)
-        problem.addVariable(id, ['N', destination])
-    elif (type == "R"):
+        problem.addVariable(id, ['N', destination_list[index]])
+    elif(type_list[index] == "R"):
         print("Container w/ R's id = ", id)
-        problem.addVariable(id, ['N','E', destination])
+        problem.addVariable(id, ['N','E', destination_list[index]])
     else:
         print("Input error. ", sys.argv[3], " contains wrong data.")
 
-def compareDestination(a, b):
-    if a < b:
-	    return True
+print(id_list[1:])
+print(type_list)
+print(destination_list, "\n")
 
-#problem.addConstraint(compareDestination, )
+for id in id_list[1:]:
+    id = int(id)
+    problem.addConstraint(compareDestination, (type_list[id], type_list[id-1]))
+    print("id: ", id, ", id-1: ", id-1)
+
+
+
+
 
 
 
