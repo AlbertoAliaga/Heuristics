@@ -6,7 +6,6 @@ import os
 from constraint import *
 import itertools
 
-
 ######################## Input reading ##################################
 # In order to run this code on Linux: python3 csp.py /home/rbn/pyCharmProjects/Heuristica/lab-2/Heuristics/P2 Input-cells.txt Input-cont.txt
 
@@ -15,9 +14,8 @@ map = sys.argv[2]
 container = sys.argv[3]
 
 os.chdir(path)
-map_file_size = os.stat(str(path)+"/"+str(map)).st_size
-container_file_size = os.stat(str(path)+"/"+str(container)).st_size
-
+map_file_size = os.stat(str(path) + "/" + str(map)).st_size
+container_file_size = os.stat(str(path) + "/" + str(container)).st_size
 
 map = open(map, "r")
 container = open(container, "r")
@@ -47,32 +45,44 @@ destination_list = []
 # This loop takes variables from the containers and assigns domains 
 for elem in container:
     index = container.index(elem)
-    container[index] = elem.split()      # List with separated elements from container list
+    container[index] = elem.split()  # List with separated elements from container list
     id_list.append(int(container[index][0]))
     type_list.append(container[index][1])
     destination_list.append(int(container[index][2]))
-    #print("id = ", id, "\ttype = ", type, "\tdest = ", destination)
+    # print("id = ", id, "\ttype = ", type, "\tdest = ", destination)
 
-    id = id_list[index]     #Aux var to avoid memory accesses
+    # id = id_list[index]     #Aux var to avoid memory accesses
 
 # List with the cartesian product of all possible types of cells and destination ports
 domain = []
-for i in itertools.product(['N','E'], list(range(1, max(destination_list)+1))):
+for i in itertools.product(['N', 'E'], list(range(1, max(destination_list) + 1))):
     domain.append(i)
 print("Domain: ")
 print(domain)
 
 #
 for elem in container:
-    if(type_list[index] == "S"):
+    index = container.index(elem)
+    cont_id = id_list[index]  # Aux var to avoid memory accesses
+
+    if type_list[index] == "S":
+        toInputList = []
         for i in domain:
-            print("Container w/ S's id = ", id)
-            problem.addVariable(id, ['N'])
-            problem.addVariable(id, [destination_list[index]])
-    elif(type_list[index] == "R"):
-        for
-            print("Container w/ R's id = ", id)
-            problem.addVariable(id, domain)
+            if i[1] == destination_list[index]:
+                toInputList.append(i)
+
+        problem.addVariable(cont_id, toInputList)
+        print("Container w/ S's id = ", cont_id)
+
+    elif type_list[index] == "R":
+        toInputList = []
+        for i in domain:
+            if i[1] == destination_list[index]:
+                toInputList.append(i)
+
+        problem.addVariable(cont_id, toInputList)
+        print("Container w/ R's id = ", cont_id)
+
     else:
         print("Input error. ", sys.argv[3], " contains wrong data.")
 
@@ -80,24 +90,20 @@ print("\nID list: ", id_list)
 print("Type list: ", type_list)
 print("Destination list: ", destination_list, "\n")
 
+
 def compareDestination(a, b):
     print("a: ", a, ", b: ", b)
     if a < b:
         return True
 
+
 # This loop iterates over each container and compares its destination to all others
-for id in range(0, len(id_list)):
-    a = destination_list[id]
-    for id_iter in range(id+1, len(id_list)):
-        #print(type_list[id_iter])
+for id_index in range(0, len(id_list)):
+    a = destination_list[id_index]
+    for id_iter in range(id_index + 1, len(id_list)):
+        # print(type_list[id_iter])
         b = destination_list[id_iter]
-        #problem.addConstraint(compareDestination, (a, b))
+        problem.addConstraint(compareDestination, (a, b))
 
 solutions = problem.getSolutions()
-
-
-
-
-
-
 
