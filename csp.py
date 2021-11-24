@@ -38,10 +38,6 @@ problem = Problem()
 
 # Domain 0 = N     Domain 1 = E       Destination X = X    
 
-def compareDestination(a, b):
-    if a == 'R' and b == 'S' and a < b:
-	    return True
-
 # One list per field on container
 id_list = []
 type_list = []
@@ -67,14 +63,25 @@ for elem in container:
     else:
         print("Input error. ", sys.argv[3], " contains wrong data.")
 
-print(id_list[1:])
+print(id_list)
 print(type_list)
 print(destination_list, "\n")
 
-for id in id_list[1:]:
-    id = int(id)
-    problem.addConstraint(compareDestination, (type_list[id], type_list[id-1]))
-    print("id: ", id, ", id-1: ", id-1)
+def compareDestination(a, b):
+    if a < b:
+	    return True
+
+# This loop iterates over each container and compares its destination to all others
+for id in range(0, len(id_list)):
+    a = destination_list[id]
+    for id_iter in range(0, len(id_list)):
+        print(type_list[id_iter])
+        for dest in range(1, max(destination_list)):
+            if id != id_iter and a != dest:
+                b = destination_list[id_iter]
+                problem.addConstraint(compareDestination, (a, b))
+
+#print(problem.getSolution())
 
 
 
