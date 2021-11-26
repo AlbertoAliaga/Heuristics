@@ -30,10 +30,6 @@ container = container.split("\n")
 
 ############################################# VARIABLES ######################################################
 
-'''
-    Each input on Input-cont.txt is a variable. The domains indicate whether it needs a power
-    supplied cell or not (if it is an R type container it is needed) and their port destination.
-'''
 
 problem = Problem()
 
@@ -44,8 +40,6 @@ destination_list = []
 # Domain for each type of container (X has the empty set as domain, so we ignore it)
 standardDomain = []
 energyDomain = []
-numStacks = len(map)
-stackSize = len(map[0].split())
 variablesN = [] # numpy.zeros((numStacks, stackSize))
 variablesE = []
 
@@ -101,7 +95,7 @@ print("variablesN == ", variablesN)
 print("variablesE == ", variablesE)
 print("standardDomain == ", standardDomain)
 print("energyDomain == ", energyDomain)
-
+print("E count == ", e, "\t N count == ", n)
 # Now add the variables to the problem
 for i in variablesE:
     problem.addVariable(i, energyDomain)
@@ -110,27 +104,8 @@ for i in variablesN:
 
 ############################################# CONSTRAINTS ######################################################
 
-'''
-e = 0
-n = 0
-ii = 0
-while ii < numStacks:
-    jj = 0
-    while jj < stackSize:
-        if stackLevel[ii + jj] == 'N':
-            ## Add loop variable
-            problem.addVariable(variables[ii+jj], standardDomain)
-            # variablesN.append(0)
-            n = n + 1
-        elif stackLevel[ii + jj] == 'E':
-            ## Add loop variable
-            #problem.addVariable(variables[ii+jj], energyDomain)
-            variablesE.append(0)
-            e = e + 1
-        jj = jj + 1
-    ii = ii + 1
-'''
-print("E == ", e, "\t N == ", n)
+
+
 
 '''
 # List with the cartesian product of all possible types of cells and destination ports
