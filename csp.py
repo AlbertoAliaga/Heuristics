@@ -9,7 +9,7 @@ from constraint import *
 import itertools
 
 ######################## Input reading ##################################
-# In order to run this code on Linux: python3 csp.py /home/rbn/pyCharmProjects/Heuristica/lab-2/Heuristics/P2 Input-cells.txt Input-cont.txt
+# In order to run this code on Linux: python3 csp.py /home/rbn/pyCharmProjects/Heuristica/lab-2/Heuristics/input-files cells-00.txt containers-00.txt
 
 path = sys.argv[1]
 map = sys.argv[2]
@@ -28,7 +28,7 @@ container = container.read(container_file_size)
 map = map.split("\n")
 container = container.split("\n")
 
-############################################# VARIABLES ######################################################
+# ############################################ VARIABLES ######################################################
 
 
 problem = Problem()
@@ -52,7 +52,7 @@ for elem in container:
     destination_list.append(int(container[index][2]))
 
 # Get a list of chars to properly iterate the cells
-stackLevel = []
+cells = []
 for i in map:
     # print(i)
     line_num = map.index(i)
@@ -61,27 +61,25 @@ for i in map:
     j = 0
     while j < len(line):
         # print("line[", j, "] == ", line[j])
-        stackLevel.append(line[j])
+        cells.append(line[j])
         j = j + 1
 
 
 # Fill standardDomain and endergyDomain with their corresponding container id's
-i = 0
-while i < len(type_list):
+for i in range(len(type_list)):
     if type_list[i] == 'S':
         standardDomain.append(id_list[i])
     elif type_list[i] == 'R':
         energyDomain.append(id_list[i])
         standardDomain.append(id_list[i])
 
-    i = i + 1
 
 # Now fill each variable type list with the corresponding elements
 # Each must be different, so we assign an index to each N and another to each E
 n = 0
 e = 0
-for i in stackLevel:
-    lvl = stackLevel.index(i)
+for i in cells:
+    lvl = cells.index(i)
     if i == 'N':
         var = i + str(n)
         variablesN.append(var)
@@ -91,18 +89,38 @@ for i in stackLevel:
         variablesE.append(var)
         e = e + 1
 
+num_levels = len(map)
+num_stacks = (len(cells)/len(map))
+'''
+print("map == ", map, "\tnum levels == ", num_levels, "\tnum stacks == ", num_stacks)
+print("cells == ", cells)
 print("variablesN == ", variablesN)
 print("variablesE == ", variablesE)
 print("standardDomain == ", standardDomain)
 print("energyDomain == ", energyDomain)
 print("E count == ", e, "\t N count == ", n)
+'''
 # Now add the variables to the problem
 for i in variablesE:
     problem.addVariable(i, energyDomain)
 for i in variablesN:
     problem.addVariable(i, standardDomain)
 
-############################################# CONSTRAINTS ######################################################
+'''
+# Test: Obtain only first element of the string
+ts = "A0"
+# nts = ts[:len(ts)-1]
+nts = ts[0]
+print("nts == ", nts)
+'''
+
+# ############################################ CONSTRAINTS ######################################################
+
+# Make sure a container doesn't get assigned to several cells at the same time
+allVariables = variablesN.copy()
+allVariables.extend(variablesE)
+print("allVariables == ", allVariables)
+problem.addConstraint(AllDifferentConstraint(), allVariables)
 
 
 
