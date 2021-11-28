@@ -1,12 +1,13 @@
 #!/usr/bin/python
-import string
+# import string
 import sys
 import os
 
-import numpy
+# import numpy
 from constraint import *
+
 # from numpy import *
-import itertools
+# import itertools
 
 ######################## Input reading ##################################
 # In order to run this code on Linux: python3 csp.py /home/rbn/pyCharmProjects/Heuristica/lab-2/Heuristics/input-files cells-00.txt containers-00.txt
@@ -30,7 +31,6 @@ container = container.split("\n")
 
 # ############################################ VARIABLES ######################################################
 
-
 problem = Problem()
 
 # One list per field on container
@@ -40,7 +40,7 @@ destination_list = []
 # Domain for each type of container (X has the empty set as domain, so we ignore it)
 standardDomain = []
 energyDomain = []
-variablesN = [] # numpy.zeros((numStacks, stackSize))
+variablesN = []  # numpy.zeros((numStacks, stackSize))
 variablesE = []
 
 # This loop takes variables from the containers and assigns domains
@@ -64,15 +64,15 @@ for i in map:
         cells.append(line[j])
         j = j + 1
 
-
-# Fill standardDomain and endergyDomain with their corresponding container id's
+# Fill standardDomain and energyDomain with their corresponding container id's
+standardDomain.append(0)
+energyDomain.append(0)
 for i in range(len(type_list)):
     if type_list[i] == 'S':
         standardDomain.append(id_list[i])
     elif type_list[i] == 'R':
         energyDomain.append(id_list[i])
-        standardDomain.append(id_list[i])
-
+        # standardDomain.append(id_list[i])
 
 # Now fill each variable type list with the corresponding elements
 # Each must be different, so we assign an index to each N and another to each E
@@ -90,39 +90,50 @@ for i in cells:
         e = e + 1
 
 num_levels = len(map)
-num_stacks = (len(cells)/len(map))
-'''
+num_stacks = (len(cells) / len(map))
+
+# Now add the variables to the problem
+allVariables = variablesN.copy()
+allVariables.extend(variablesE)
+allDomains = standardDomain.copy()
+allDomains.extend(energyDomain)
+
+for i in allVariables:
+    if i[0] == "N":
+        # print("of type N > ", i)
+        problem.addVariable(i, allDomains)
+    elif i[0] == "E":
+        # print("of type E > ", i)
+        problem.addVariable(i, energyDomain)
+
+
 print("map == ", map, "\tnum levels == ", num_levels, "\tnum stacks == ", num_stacks)
 print("cells == ", cells)
 print("variablesN == ", variablesN)
 print("variablesE == ", variablesE)
+
+print("allVariables == ", allVariables)
 print("standardDomain == ", standardDomain)
 print("energyDomain == ", energyDomain)
+print("allDomains == ", allDomains)
 print("E count == ", e, "\t N count == ", n)
-'''
-# Now add the variables to the problem
-for i in variablesE:
-    problem.addVariable(i, energyDomain)
-for i in variablesN:
-    problem.addVariable(i, standardDomain)
 
-'''
-# Test: Obtain only first element of the string
-ts = "A0"
-# nts = ts[:len(ts)-1]
-nts = ts[0]
-print("nts == ", nts)
-'''
 
 # ############################################ CONSTRAINTS ######################################################
 
 # Make sure a container doesn't get assigned to several cells at the same time
-allVariables = variablesN.copy()
-allVariables.extend(variablesE)
-print("allVariables == ", allVariables)
-problem.addConstraint(AllDifferentConstraint(), allVariables)
+sum = 0
+for i in id_list:
+    sum += i
+# print("Sum of all variables: ", sum)
+problem.addConstraint(ExactSumConstraint(3))
 
 
+# Now give preference to those cells which are on the bottom of the stack
+def checkPortPreference(a, b):
+    if a >= b:
+        return True
+    return False
 
 
 '''
@@ -181,5 +192,5 @@ for id_index in range(0, len(id_list)):
 
 '''
 
-# solutions = problem.getSolutions()
-# print(solutions)
+solutions = problem.getSolution()
+print("Solutions:\t", solutions)
