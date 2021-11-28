@@ -74,23 +74,22 @@ for i in range(len(type_list)):
         energyDomain.append(id_list[i])
         # standardDomain.append(id_list[i])
 
-# Now fill each variable type list with the corresponding elements
-# Each must be different, so we assign an index to each N and another to each E
-n = 0
-e = 0
-for i in cells:
-    lvl = cells.index(i)
-    if i == 'N':
-        var = i + str(n)
-        variablesN.append(var)
-        n = n + 1
-    elif i == 'E':
-        var = i + str(e)
-        variablesE.append(var)
-        e = e + 1
-
 num_levels = len(map)
-num_stacks = (len(cells) / len(map))
+num_stacks = int((len(cells) / len(map)))
+# Now fill each variable type list with the corresponding elements
+# Each must be different, so we assign an index to each variable to later check its position in the cargo ship
+i = 0
+j = 0
+while j < num_levels - 1:
+    while i < num_stacks:
+        var = cells[i + j * num_stacks] + str(j) + "-" + str(i)
+        if cells[num_stacks * j + i] == 'N':
+            variablesN.append(var)
+        elif cells[num_stacks * j + i] == 'E':
+            variablesE.append(var)
+        i += 1
+    i = 0
+    j += 1
 
 # Now add the variables to the problem
 allVariables = variablesN.copy()
@@ -105,8 +104,7 @@ for i in allVariables:
     elif i[0] == "E":
         # print("of type E > ", i)
         problem.addVariable(i, energyDomain)
-
-
+'''
 print("map == ", map, "\tnum levels == ", num_levels, "\tnum stacks == ", num_stacks)
 print("cells == ", cells)
 print("variablesN == ", variablesN)
@@ -116,9 +114,8 @@ print("allVariables == ", allVariables)
 print("standardDomain == ", standardDomain)
 print("energyDomain == ", energyDomain)
 print("allDomains == ", allDomains)
-print("E count == ", e, "\t N count == ", n)
-
-
+# print("E count == ", e, "\t N count == ", n)
+'''
 # ############################################ CONSTRAINTS ######################################################
 
 # Make sure a container doesn't get assigned to several cells at the same time
@@ -126,7 +123,7 @@ sum = 0
 for i in id_list:
     sum += i
 # print("Sum of all variables: ", sum)
-problem.addConstraint(ExactSumConstraint(3))
+problem.addConstraint(ExactSumConstraint(sum))
 
 
 # Now give preference to those cells which are on the bottom of the stack
@@ -136,61 +133,38 @@ def checkPortPreference(a, b):
     return False
 
 
-'''
-# List with the cartesian product of all possible types of cells and destination ports
-domain = []
-for i in itertools.product(['N', 'E'], list(range(1, max(destination_list) + 1))):
-    domain.append(i)
-print("Domain: ")
-print(domain)
+def getVariableIndex(i, j):
+    print("getVariableIndex(", i, ",", j, ")")
+    toReturn = -1
+    for var in allVariables:
+        iter = var[1:]
+        div = iter.split("-")
+        x = int(div[0])
+        y = int(div[1])
 
-#
-for elem in container:
-    index = container.index(elem)
-    cont_id = id_list[index]  # Aux var to avoid memory accesses
-
-    if type_list[index] == "S":
-        toInputList = []
-        for i in domain:
-            if i[1] == destination_list[index]:
-                toInputList.append(i)
-
-        problem.addVariable(cont_id, toInputList)
-        print("Container w/ S's id = ", cont_id)
-
-    elif type_list[index] == "R":
-        toInputList = []
-        for i in domain:
-            if i[1] == destination_list[index]:
-                toInputList.append(i)
-
-        problem.addVariable(cont_id, toInputList)
-        print("Container w/ R's id = ", cont_id)
-
-    else:
-        print("Input error. ", sys.argv[3], " contains wrong data.")
-
-print("\nID list: ", id_list)
-print("Type list: ", type_list)
-print("Destination list: ", destination_list, "\n")
+        # print("iter(", x, "," , y, ") with i = ", i, "and j = ",j)
+        if int(i) == x and int(j) == y:
+            print("getVarIn -> ", var)
+            toReturn = allVariables.index(var)
+    # print()
+    return toReturn
 
 
-def compareDestination(a, b):
-    print("a: ", a, ", b: ", b)
-    if a < b:
-        return True
+print("allVariables == ", allVariables)
 
-
-# This loop iterates over each container and compares its destination to all others
-for id_index in range(0, len(id_list)):
-    a = destination_list[id_index]
-    for id_iter in range(id_index + 1, len(id_list)):
-        # print(type_list[id_iter])
-        b = destination_list[id_iter]
-        problem.addConstraint(compareDestination, (a, b))
-
-
-'''
+i = num_stacks - 1
+j = num_levels - 1
+while j >= 0:
+    while i >= 0:
+        if cells[i + j * num_stacks] != "X" and j > 0:
+            index = getVariableIndex(int(i + j * num_stacks), int(i + j * num_stacks - num_stacks))
+            if index != -1:
+                print("variables en constraint creation cells[", cells[i + j * num_stacks], ", ",
+                      cells[i + j * num_stacks - num_stacks], "] == ", allVariables[index])
+                # problem.addConstraint(checkPortPreference, (cells[i + j*num_stacks], cells[i + j*num_stacks - num_stacks])) # (i + j, i - 1 + j), (
+        i -= 1
+    i = num_stacks - 1
+    j -= 1
 
 solutions = problem.getSolution()
 print("Solutions:\t", solutions)
