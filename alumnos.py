@@ -1,4 +1,3 @@
-
 from constraint import *
 
 problem = Problem()
@@ -20,6 +19,7 @@ problem.addVariables(['A', 'Y', 'R', 'F'], [1, 2, 3])
 problem.addVariable('J', [2, 3])
 problem.addVariable('M', [3])
 
+
 # A continuacion se anyaden las restricciones del problema mediante la funcion addConstraint proporcionada por la libreria
 #
 # Ejemplos:
@@ -38,15 +38,15 @@ problem.addVariable('M', [3])
 # notEqual, que compruebe que el valor de una variable es diferente de la de la otra:
 
 def notEqual(a, b):
-	if a != b:
-		return True
+    if a != b:
+        return True
+
 
 problem.addConstraint(notEqual, ('A', 'F'))
 
 # Tambien se puede crear una funcion lambda para hacer esta comprobacion:
 
 problem.addConstraint(lambda a, b: a != b, ('A', 'F'))
-
 
 # Por ultimo, la libreria ofrece la funcion AllDifferentConstraint que precisamente comprueba que el valor de una variable es diferente a las de las otras:
 
@@ -61,9 +61,10 @@ problem.addConstraint(lambda a, b: a == b, ('R', 'F'))
 # Por ultimo, modelamos la restriccion de que Yara hace una parte posterior a la que haga Ruben, RR,Y={(1,2),(1,3),(2,3)}
 
 def consecutive(a, b):
-	print("\n Consecutive R=", a, " Y=", b)
-	if b == a + 1:
-		return True
+    print("\n Consecutive R=", a, " Y=", b)
+    if b == a + 1:
+        return True
+
 
 problem.addConstraint(consecutive, ('R', 'Y'))
 
@@ -73,4 +74,4 @@ print(problem.getSolution())
 
 # o todas las soluciones:
 
-#print(problem.getSolutions())
+# print(problem.getSolutions())

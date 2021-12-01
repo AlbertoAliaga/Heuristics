@@ -9,7 +9,7 @@ from constraint import *
 # from numpy import *
 # import itertools
 
-######################## Input reading ##################################
+# ####################### Input reading ##################################
 # In order to run this code on Linux: python3 csp.py /home/rbn/pyCharmProjects/Heuristica/lab-2/Heuristics/input-files cells-00.txt containers-00.txt
 
 path = sys.argv[1]
@@ -124,17 +124,19 @@ for i in id_list:
     sum += i
 # print("Sum of all variables: ", sum)
 problem.addConstraint(ExactSumConstraint(sum))
+problem.addConstraint(MaxSumConstraint(sum))
+# problem.addConstraint(AllDifferentConstraint())
 
 
 # Now give preference to those cells which are on the bottom of the stack
 def checkPortPreference(a, b):
-    if a >= b:
+    if b <= a:
         return True
     return False
 
 
-def getVariableIndex(i, j):
-    print("getVariableIndex(", i, ",", j, ")")
+def getVariableIndex(ii, jj):
+    # print("getVariableIndex(", i, ",", j, ")")
     toReturn = -1
     for var in allVariables:
         iter = var[1:]
@@ -142,9 +144,9 @@ def getVariableIndex(i, j):
         x = int(div[0])
         y = int(div[1])
 
-        # print("iter(", x, "," , y, ") with i = ", i, "and j = ",j)
-        if int(i) == x and int(j) == y:
-            print("getVarIn -> ", var)
+        if int(ii) == x and int(jj) == y:
+            # print("iter(", x, ",", y, ") with i = ", ii, "and j = ", jj)
+            # print("getVarIn -> ", var)
             toReturn = allVariables.index(var)
     # print()
     return toReturn
@@ -156,12 +158,19 @@ i = num_stacks - 1
 j = num_levels - 1
 while j >= 0:
     while i >= 0:
-        if cells[i + j * num_stacks] != "X" and j > 0:
-            index = getVariableIndex(int(i + j * num_stacks), int(i + j * num_stacks - num_stacks))
-            if index != -1:
-                print("variables en constraint creation cells[", cells[i + j * num_stacks], ", ",
-                      cells[i + j * num_stacks - num_stacks], "] == ", allVariables[index])
-                # problem.addConstraint(checkPortPreference, (cells[i + j*num_stacks], cells[i + j*num_stacks - num_stacks])) # (i + j, i - 1 + j), (
+        if cells[i + j * num_stacks] != "X":
+            if j > 0:
+                # print("cells[i+j*num_stacks] == ", cells[i + j * num_stacks])
+                index = getVariableIndex(int(i), int(j))
+                if index != -1:
+                    index2 = getVariableIndex(i, j - 1)
+                    print("celda[", i, ", ", j, "] == index(", index, ")")
+                    problem.addConstraint(checkPortPreference, (allVariables[index], allVariables[index2]))
+
+            elif j == 0:
+                index = getVariableIndex(i, j)
+
+                print("j == 0")
         i -= 1
     i = num_stacks - 1
     j -= 1
