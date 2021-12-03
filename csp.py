@@ -104,7 +104,7 @@ for i in allVariables:
     elif i[0] == "E":
         # print("of type E > ", i)
         problem.addVariable(i, energyDomain)
-'''
+
 print("map == ", map, "\tnum levels == ", num_levels, "\tnum stacks == ", num_stacks)
 print("cells == ", cells)
 print("variablesN == ", variablesN)
@@ -115,7 +115,7 @@ print("standardDomain == ", standardDomain)
 print("energyDomain == ", energyDomain)
 print("allDomains == ", allDomains)
 # print("E count == ", e, "\t N count == ", n)
-'''
+
 # ############################################ CONSTRAINTS ######################################################
 
 # Make sure a container doesn't get assigned to several cells at the same time
@@ -125,12 +125,28 @@ for i in id_list:
 # print("Sum of all variables: ", sum)
 problem.addConstraint(ExactSumConstraint(sum))
 problem.addConstraint(MaxSumConstraint(sum))
-# problem.addConstraint(AllDifferentConstraint())
+
+
+def differentNonZero(a, b):
+    if a == b:
+        return False
+    # print("differentNonZero return True with a ==", a, ", b == ", b)
+    return True
+
+
+for a in allVariables:
+    if a != 0:
+        for b in allVariables:
+            if allVariables.index(a) != allVariables.index(b):
+                print("if del constraint, a ==", a, ", b == ", b)
+                problem.addConstraint(differentNonZero, (a, b))
 
 
 # Now give preference to those cells which are on the bottom of the stack
 def checkPortPreference(a, b):
-    if b <= a:
+    if b < a != 0 and b != 0:
+        return True
+    elif b == 0 and a >= b:
         return True
     return False
 
