@@ -87,34 +87,38 @@ problem.addVariables(R_variables, domainR)
 
 # ############################################ CONSTRAINTS ######################################################
 
+# https://www.studytonight.com/python-howtos/pass-a-list-to-a-function-to-act-as-multiple-arguments
 
-def checkCellOrder(a, b, vars=[]):
+def checkCellOrder(a, b, *vars):
     # num_levels = len(map)
     num_stacks = int((len(cells) / len(map)))
-    upperCell = a - num_stacks
-    b = False
 
-    if b == a-1:
+    bl = False
+
+    # if a < num_stacks and b == a-1:
+    if b == a - 1:
         # comprobar que la celda de abajo (a-1+num_stacks) no está vacía
         for v in vars:
-            if v == a - 1 + num_stacks:
-                b = True
-    elif b == upperCell:
-        b = True
+            if v == (a - 1 + num_stacks):
+                bl = True
+    if a >= num_stacks:  # and b == upperCell:
+        upperCell = a - num_stacks
+        if b == upperCell:
+            bl = True
 
-    return b
+    return bl
 
 
 def checkCells(*variables):
     ii = 0
-    jj = 0
+    jj = 1
     ll = len(variables)
     ret = False
     while ii < ll:
         while jj < ll:
             # print("ii == ", ii, " jj == ", jj)
             # if destination_list[ii] > destination_list[jj]:
-            if checkCellOrder(variables[ii], variables[jj], variables):
+            if checkCellOrder(variables[ii], variables[jj], *variables):
                 ret = True
             jj += 1
         ii += 1
@@ -169,6 +173,6 @@ print("Number of solutions: ", len(solutions))
 for solution in solutions:
     for i in solution:
         solution[i] = translateIndexToCell(solution[i])
-    print(solution)
+    # print(solution)
 
 print("Number of solutions: ", len(solutions))
