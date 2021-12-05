@@ -87,23 +87,51 @@ problem.addVariables(R_variables, domainR)
 
 # ############################################ CONSTRAINTS ######################################################
 
-def checkCellOrder(a, b):
+
+def checkCellOrder(a, b, vars=[]):
     # num_levels = len(map)
     num_stacks = int((len(cells) / len(map)))
     upperCell = a - num_stacks
-    if b < a or b == upperCell:
-        return True
-    return False
+    b = False
+
+    if b == a-1:
+        # comprobar que la celda de abajo (a-1+num_stacks) no está vacía
+        for v in vars:
+            if v == a - 1 + num_stacks:
+                b = True
+    elif b == upperCell:
+        b = True
+
+    return b
 
 
-def translateIndexToCell(index):
+def checkCells(*variables):
+    ii = 0
+    jj = 0
+    ll = len(variables)
+    ret = False
+    while ii < ll:
+        while jj < ll:
+            # print("ii == ", ii, " jj == ", jj)
+            # if destination_list[ii] > destination_list[jj]:
+            if checkCellOrder(variables[ii], variables[jj], variables):
+                ret = True
+            jj += 1
+        ii += 1
+        jj = ii + 1
+
+    return ret
+
+
+def translateIndexToCell(ind):
     # num_levels = len(map)
     num_stacks = int((len(cells) / len(map)))
 
-    level = int(index / num_stacks)
-    stack = index % num_stacks
+    level = int(ind / num_stacks)
+    stack = ind % num_stacks
     cell = (stack, level)
     return cell
+
 
 '''
 for i in range(len(cells)):
@@ -115,28 +143,32 @@ print("len allVariables == ", len(allVariables))
 print("allVariables == ", allVariables)
 print("id_list == ", id_list)
 '''
+print("id_list == ", id_list)
 
 problem.addConstraint(AllDifferentConstraint())
 
+problem.addConstraint(checkCells, id_list)
+'''
 numVars = len(id_list)
-
 i = 0
 j = 1
 while i < numVars:
+    # print("i == ", i)
     while j < numVars:
+        # print("j == ", j)
         if destination_list[i] > destination_list[j]:
-            problem.addConstraint(checkCellOrder, i, j)
+            problem.addConstraint(checkCellOrder, [id_list[i], id_list[j]])
         j += 1
     i += 1
     j = i + 1
-
+'''
 solutions = problem.getSolutions()
-# print(solutions)
 
+print("Number of solutions: ", len(solutions))
+# Print every solution with correct index
 for solution in solutions:
     for i in solution:
         solution[i] = translateIndexToCell(solution[i])
     print(solution)
 
-
-
+print("Number of solutions: ", len(solutions))
