@@ -78,6 +78,18 @@ for c in range(len(cells)):
         domainS.append(c)
         domainR.append(c)
 
+# num_levels = len(map)
+num_stacks = int((len(cells) / len(map)))
+bottomCells = []
+for c in range(len(cells)):
+    if c < len(cells)-num_stacks:
+        if cells[c] != 'X' and cells[c+num_stacks] == 'X':
+            bottomCells.append(c)
+    else:
+        if cells[c] != 'X':
+            bottomCells.append(c)
+
+print("BottomCells == ", bottomCells)
 print("Domain S == ", domainS)
 print("Domain R == ", domainR)
 
@@ -89,12 +101,21 @@ problem.addVariables(R_variables, domainR)
 
 # https://www.studytonight.com/python-howtos/pass-a-list-to-a-function-to-act-as-multiple-arguments
 
+for aa in cells:
+    print("aa, ", cells.index(aa), "aa+num_stacks", cells.index(aa)+num_stacks)
+
+
 def checkCellOrder(a, b, *vars):
-    # num_levels = len(map)
-    num_stacks = int((len(cells) / len(map)))
 
-    bl = False
+    if a in bottomCells:
+        return True
 
+    for v in vars:
+        if v != a and v == a+num_stacks:
+            return True
+
+    return False
+'''
     # if a < num_stacks and b == a-1:
     if b == a - 1:
         # comprobar que la celda de abajo (a-1+num_stacks) no está vacía
@@ -106,14 +127,17 @@ def checkCellOrder(a, b, *vars):
         if b == upperCell:
             bl = True
 
-    return bl
+    # return bl
+    # END FUNCTION
+'''
 
 
 def checkCells(*variables):
-    ii = 0
-    jj = 1
-    ll = len(variables)
+    # ii = 0
+    # jj = 1
+    # ll = len(variables)
     ret = False
+    '''
     while ii < ll:
         while jj < ll:
             # print("ii == ", ii, " jj == ", jj)
@@ -123,7 +147,12 @@ def checkCells(*variables):
             jj += 1
         ii += 1
         jj = ii + 1
-
+    '''
+    for ii in variables:
+        for jj in variables:
+            if ii != jj:
+                if checkCellOrder(ii, jj, *variables):
+                    ret = True
     return ret
 
 
