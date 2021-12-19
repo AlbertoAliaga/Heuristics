@@ -209,6 +209,8 @@ def translateIndexToCell(ind):
     cell = (stack, level)
     return cell
 
+    
+
 
 '''
 for i in range(len(cells)):
