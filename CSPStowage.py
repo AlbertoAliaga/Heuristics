@@ -6,6 +6,7 @@ from constraint import *
 
 # ####################### Input reading ##################################
 # In order to run this code on Linux: python3 csp.py /home/rbn/pyCharmProjects/Heuristica/lab-2/Heuristics/input-files cells-00.txt containers-00.txt
+# python3 CSPStowage.py ./input-files cells-00.txt containers-00.txt
 
 path = sys.argv[1]
 map = sys.argv[2]
@@ -115,6 +116,49 @@ def checkCellOrder(a, b, *vars):
             return True
 
     return False
+
+#############################COPIADO#########################################################
+'''
+def validateStackPair(lower, upper):
+    isLowerCellUsed = lower.isdigit()
+    isUpperCellUsed = upper.isdigit()
+
+    isValid = not isUpperCellUsed or isLowerCellUsed
+
+    #print(f"Usage | lower: {lower} upper: {upper} result: {isValid}")
+    
+    if not isValid:
+        return False
+    return True
+
+def validatePortPair(lower, upper):
+        lowerPort = 0
+        upperPort = 0
+
+        if lower.isdigit():
+            lowerPort = int(containers_dictionary[lower][1])
+
+        if (upper.isdigit()):
+            upperPort = int(containers_dictionary[upper][1])
+
+        isValid = lowerPort >= upperPort
+
+        #print(f"Port | lower: {lowerPort} upper: {upperPort} result: {isValid}")
+
+        if not isValid:
+            return False
+        return True
+
+# Creates a constraints for each cell pair
+for column in range(len(map_file[0])):
+    for row in reversed(range(len(map_file) - 1)):
+        if (map_file[row + 1][column] != "X"):
+            lowerCell = (row + 1, column)
+            upperCell = (row, column)
+            problem.addConstraint(validateStackPair, [lowerCell, upperCell])
+            problem.addConstraint(validatePortPair, [lowerCell, upperCell])
+'''
+#############################COPIADO########################################################
 '''
     # if a < num_stacks and b == a-1:
     if b == a - 1:
@@ -180,7 +224,8 @@ print("id_list == ", id_list)
 
 problem.addConstraint(AllDifferentConstraint())
 
-problem.addConstraint(checkCells, id_list)
+problem.addConstraint(checkCells)
+
 '''
 numVars = len(id_list)
 i = 0
