@@ -101,18 +101,23 @@ problem.addVariables(R_variables, domainR)
 
 # https://www.studytonight.com/python-howtos/pass-a-list-to-a-function-to-act-as-multiple-arguments
 
+'''
 for aa in cells:
     print("aa, ", cells.index(aa), "aa+num_stacks", cells.index(aa) + num_stacks)
+'''
 
 
-def checkCellOrder(a, b, *vars):
+def checkCellOrder(a, b):
     if a in bottomCells:
         return True
 
+    if b == a+num_stacks:
+        return True;
+    '''
     for v in vars:
         if v != a and v == a + num_stacks:
             return True
-
+    '''
     return False
 
 
@@ -158,21 +163,6 @@ for column in range(len(map_file[0])):
             problem.addConstraint(validatePortPair, [lowerCell, upperCell])
 '''
 # ############################COPIADO########################################################
-'''
-    # if a < num_stacks and b == a-1:
-    if b == a - 1:
-        # comprobar que la celda de abajo (a-1+num_stacks) no está vacía
-        for v in vars:
-            if v == (a - 1 + num_stacks):
-                bl = True
-    if a >= num_stacks:  # and b == upperCell:
-        upperCell = a - num_stacks
-        if b == upperCell:
-            bl = True
-
-    # return bl
-    # END FUNCTION
-'''
 
 
 def checkCells(*variables):
@@ -180,22 +170,13 @@ def checkCells(*variables):
     # jj = 1
     # ll = len(variables)
     ret = False
-    '''
-    while ii < ll:
-        while jj < ll:
-            # print("ii == ", ii, " jj == ", jj)
-            # if destination_list[ii] > destination_list[jj]:
-            if checkCellOrder(variables[ii], variables[jj], *variables):
-                ret = True
-            jj += 1
-        ii += 1
-        jj = ii + 1
-    '''
+
     for ii in variables:
         for jj in variables:
             if ii != jj:
-                if checkCellOrder(ii, jj, *variables):
+                if checkCellOrder(ii, jj):
                     ret = True
+
     return ret
 
 
@@ -225,20 +206,6 @@ problem.addConstraint(AllDifferentConstraint())
 
 problem.addConstraint(checkCells)
 
-'''
-numVars = len(id_list)
-i = 0
-j = 1
-while i < numVars:
-    # print("i == ", i)
-    while j < numVars:
-        # print("j == ", j)
-        if destination_list[i] > destination_list[j]:
-            problem.addConstraint(checkCellOrder, [id_list[i], id_list[j]])
-        j += 1
-    i += 1
-    j = i + 1
-'''
 solutions = problem.getSolutions()
 
 print("Number of solutions: ", len(solutions))
