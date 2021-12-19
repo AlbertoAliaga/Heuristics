@@ -83,8 +83,8 @@ for c in range(len(cells)):
 num_stacks = int((len(cells) / len(map)))
 bottomCells = []
 for c in range(len(cells)):
-    if c < len(cells)-num_stacks:
-        if cells[c] != 'X' and cells[c+num_stacks] == 'X':
+    if c < len(cells) - num_stacks:
+        if cells[c] != 'X' and cells[c + num_stacks] == 'X':
             bottomCells.append(c)
     else:
         if cells[c] != 'X':
@@ -97,27 +97,26 @@ print("Domain R == ", domainR)
 problem.addVariables(S_variables, domainS)
 problem.addVariables(R_variables, domainR)
 
-
 # ############################################ CONSTRAINTS ######################################################
 
 # https://www.studytonight.com/python-howtos/pass-a-list-to-a-function-to-act-as-multiple-arguments
 
 for aa in cells:
-    print("aa, ", cells.index(aa), "aa+num_stacks", cells.index(aa)+num_stacks)
+    print("aa, ", cells.index(aa), "aa+num_stacks", cells.index(aa) + num_stacks)
 
 
 def checkCellOrder(a, b, *vars):
-
     if a in bottomCells:
         return True
 
     for v in vars:
-        if v != a and v == a+num_stacks:
+        if v != a and v == a + num_stacks:
             return True
 
     return False
 
-#############################COPIADO#########################################################
+
+# ############################COPIADO#########################################################
 '''
 def validateStackPair(lower, upper):
     isLowerCellUsed = lower.isdigit()
@@ -126,7 +125,7 @@ def validateStackPair(lower, upper):
     isValid = not isUpperCellUsed or isLowerCellUsed
 
     #print(f"Usage | lower: {lower} upper: {upper} result: {isValid}")
-    
+
     if not isValid:
         return False
     return True
@@ -158,7 +157,7 @@ for column in range(len(map_file[0])):
             problem.addConstraint(validateStackPair, [lowerCell, upperCell])
             problem.addConstraint(validatePortPair, [lowerCell, upperCell])
 '''
-#############################COPIADO########################################################
+# ############################COPIADO########################################################
 '''
     # if a < num_stacks and b == a-1:
     if b == a - 1:
@@ -208,8 +207,6 @@ def translateIndexToCell(ind):
     stack = ind % num_stacks
     cell = (stack, level)
     return cell
-
-    
 
 
 '''
