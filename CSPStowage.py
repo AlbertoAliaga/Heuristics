@@ -5,8 +5,6 @@ import os
 from constraint import *
 
 # ####################### Input reading ##################################
-# In order to run this code on Linux: python3 csp.py /home/rbn/pyCharmProjects/Heuristica/lab-2/Heuristics/input-files cells-00.txt containers-00.txt
-# python3 CSPStowage.py ./input-files cells-00.txt containers-00.txt
 
 path = sys.argv[1]
 map = sys.argv[2]
@@ -78,6 +76,7 @@ for c in range(len(cells)):
     if cells[c] == 'E':
         domainS.append(c)
         domainR.append(c)
+    
 
 # num_levels = len(map)
 num_stacks = int((len(cells) / len(map)))
@@ -99,84 +98,29 @@ problem.addVariables(R_variables, domainR)
 
 # ############################################ CONSTRAINTS ######################################################
 
-# https://www.studytonight.com/python-howtos/pass-a-list-to-a-function-to-act-as-multiple-arguments
-
-'''
-for aa in cells:
-    print("aa, ", cells.index(aa), "aa+num_stacks", cells.index(aa) + num_stacks)
-'''
-
 
 def checkCellOrder(a, b):
-    if a in bottomCells:
-        return True
-
-    if b == a+num_stacks:
-        return True;
-    '''
-    for v in vars:
-        if v != a and v == a + num_stacks:
-            return True
-    '''
+    if a == b+num_stacks or b == a+num_stacks:
+       return True
     return False
-
-
-# ############################COPIADO#########################################################
-'''
-def validateStackPair(lower, upper):
-    isLowerCellUsed = lower.isdigit()
-    isUpperCellUsed = upper.isdigit()
-
-    isValid = not isUpperCellUsed or isLowerCellUsed
-
-    #print(f"Usage | lower: {lower} upper: {upper} result: {isValid}")
-
-    if not isValid:
-        return False
-    return True
-
-def validatePortPair(lower, upper):
-        lowerPort = 0
-        upperPort = 0
-
-        if lower.isdigit():
-            lowerPort = int(containers_dictionary[lower][1])
-
-        if (upper.isdigit()):
-            upperPort = int(containers_dictionary[upper][1])
-
-        isValid = lowerPort >= upperPort
-
-        #print(f"Port | lower: {lowerPort} upper: {upperPort} result: {isValid}")
-
-        if not isValid:
-            return False
-        return True
-
-# Creates a constraints for each cell pair
-for column in range(len(map_file[0])):
-    for row in reversed(range(len(map_file) - 1)):
-        if (map_file[row + 1][column] != "X"):
-            lowerCell = (row + 1, column)
-            upperCell = (row, column)
-            problem.addConstraint(validateStackPair, [lowerCell, upperCell])
-            problem.addConstraint(validatePortPair, [lowerCell, upperCell])
-'''
-# ############################COPIADO########################################################
-
+    
+def checkPortOrder(a, b, dest):
+    ret = False
+    for ii in dest:
+        for jj in dest:
+            if ii >= jj and a < b+num_stacks:
+                ret=True
+            else:
+                ret=False
+    return ret
 
 def checkCells(*variables):
-    # ii = 0
-    # jj = 1
-    # ll = len(variables)
     ret = False
-
     for ii in variables:
         for jj in variables:
             if ii != jj:
-                if checkCellOrder(ii, jj):
+                if checkCellOrder(ii, jj) and checkPortOrder(ii, jj, destination_list):
                     ret = True
-
     return ret
 
 
@@ -190,16 +134,6 @@ def translateIndexToCell(ind):
     return cell
 
 
-'''
-for i in range(len(cells)):
-    print("translate cells[", i, "] to ", translateIndexToCell(i))
-
-allVariables = S_variables.copy()
-allVariables.extend(R_variables)
-print("len allVariables == ", len(allVariables))
-print("allVariables == ", allVariables)
-print("id_list == ", id_list)
-'''
 print("id_list == ", id_list)
 
 problem.addConstraint(AllDifferentConstraint())
@@ -213,6 +147,21 @@ print("Number of solutions: ", len(solutions))
 for solution in solutions:
     for i in solution:
         solution[i] = translateIndexToCell(solution[i])
-    # print(solution)
+    #print(solution)
 
 print("Number of solutions: ", len(solutions))
+
+path = sys.argv[1]
+path = path[:-12]
+path = str(path) + "/output-files"
+out_file = "cells-00-cotainers-00.txt"
+os.chdir(path)
+
+with open(out_file, 'w') as file:
+    file.write(f'Number of solutions: {len(solutions)}\n')
+    for solution in solutions:
+        variables = {}
+        for item in solution.items():
+            variables[item[1]] = item[0]
+        file.write(f'{str(variables)}\n')
+
